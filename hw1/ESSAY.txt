@@ -1,0 +1,18 @@
+1. Yes, we would expect token-based ngram models to perform better, as in character ngram models, we take ngrams into account which make no grammatical sense in the language. If we use tokens, we are only storing grammatically correct gram units, which makes for a more refined model with more accurate classification capabilities.
+-------------------------------------------------------------------------
+
+2. If we are provided with more data equally to build the language models then we will have a better model, as we will have a larger training set to choose from, allowing us to model the languages better.
+
+If we are only provided with more data for one of the languages, then we risk making our model biased towards that language. For example, if we provide more data for Indonesian, such that most of the words in our vocabulary appear in Indonesian as well as other languages, then our lack of information about other languages will lead to inaccurate classifications.
+-------------------------------------------------------------------------
+
+3. What do you think will happen if you strip out punctuations and/or
+numbers? What about converting upper case characters to lower case?
+
+If we strip out punctuations and/or numbers, I think our models will become more accurate, as punctuations and numbers occur in all the languages. Similarly, if we convert upper case characters to lower case, our models will become more accurate, as we will now be able to match words that differ only in case, something which our previous model was unable to do.
+
+-------------------------------------------------------------------------
+
+4. If we had used unigrams, our model would be extremely inaccurate, as all the unigrams exist in all the languages. For bigrams and trigrams, our models would be more accurate, but not as good as a four-gram model. However, if we make the ngram size too large, we run the risk of overfitting our model, i.e., making it too specialised towards our training data, and unable to provide meaningful classifications for test data.
+
+
