@@ -1,0 +1,16 @@
+Replace this file with the answers to the essay questions here.
+----------------------------------------------------------------------
+
+1. You will observe that a large portion of the terms in the dictionary are numbers. However, we normally do not use numbers as query terms to search. Do you think it is a good idea to remove these number entries from the dictionary and the postings lists? Can you propose methods to normalize these numbers?How many percentage of reduction in disk storage do you observe after removing/normalizing these numbers?
+
+Ans: I think it's a good idea to remove plain numbers as entries, such as digits. It might be a good idea to store dates, times, or other forms of numeric entries as in the dictionary and postings lists depending on the kind of data we are analysing. For example, the reuters data set deals with fianance, and so normalised forms of numbers may come in useful. We can normalise the numeric data by means of pattern matching, like dates, times, or currencies for example. 
+After removing all tokens that contained numbers, I observed a reduction in disk storage of 1.5MB to 854 KB for the dictionary, and from 3.7MB to 3.4 MB for the postings.
+
+2. What do you think will happen if we remove stop words from the dictionary and postings file? How does it affect the searching phase?
+
+Ans: If we remove stop words from the dictionary and postings file, we will save a lot of space, as our postings and dictionary will become smaller. It does not affect the searching much, as we are only performing boolean searches on terms, rather than querying for phrases, and it is unlikely that stop words will be searched for as they are so common in all documents.
+
+3. The NLTK tokenizer may not correctly tokenize all terms. What do you observe from the resulting terms produced by sent_tokenize() and word_tokenize()? Can you propose rules to further refine these results?
+
+Ans: The NLTK word tokenizer is good with splitting based on spaces and other punctuations, but it doesn't work very well with numbers, and has it's own rules about things like '/' and '-'. We might define special rules for numbers as a way of normalising them, as talked about above, or rules regarding special punctuations, based on the kind of data we expect to find
+The sent_tokenize function splits a given piece of text into sentences, but since we read the file in line by line, we may end up splitting sentences that span multiple lines. However, if we're only dealing with terms, or with phrases, that shouldn't be a problem, so I don't see the need to have special rules for the sent_tokenize function.
