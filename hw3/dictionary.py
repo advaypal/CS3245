@@ -1,13 +1,17 @@
 import cPickle as pickle
+import math
 
 class Dictionary(object):
 	def __init__(self, file_name):
 		self.terms = {}
 		self.file_name = file_name
-		self.doc_count = 0
+		self.doc_lengths = {}
 
-	def add_document(self):
-		self.doc_count += 1
+	def add_doc_length(self, doc_id, tf_list):
+		self.doc_lengths[doc_id] = math.sqrt(sum(map(lambda x: x * x, tf_list)))
+
+	def get_doc_length(self, doc_id):
+		return self.doc_lengths[doc_id]
 
 	def add_new_term(self, term, offset):
 		# dict[term][0] is the df of term

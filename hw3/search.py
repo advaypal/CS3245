@@ -1,5 +1,6 @@
 import nltk
 import os
+#TODO: NEEDED?
 from searcher import Searcher
 from utils import *
 import sys
@@ -13,24 +14,22 @@ def main():
 	dictionary_file = get_argument_value('-d')
 	postings_file = get_argument_value('-p')
 	output_file = get_argument_value('-o')
-	#create searcher object
+	# Create searcher object
 	searcher = Searcher(dictionary_file, postings_file)
 	input_file = file(query_file, 'r')
 	queries = input_file.read().splitlines()
 	output = file(output_file, 'w')
 	for query in queries:
-		#no null queries
+		# No null queries
 		if not query:
 			continue
-		parsed_query = parse_query(query)
-		result = searcher.evaluate_query(parsed_query)
+		result = searcher.evaluate_query(query)
 		doc_string = ' '.join(map(str, result))
 		output.write(doc_string + '\n')
 		#output.write(query + " " + doc_string + '\n')
 		#output.write(query + " " + str(len(result)) + '\n')
 	input_file.close()
 	output.close()
-
 
 if __name__ == "__main__":
 	main()

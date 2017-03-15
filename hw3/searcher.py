@@ -1,66 +1,58 @@
 from dictionary import Dictionary
 from postings import Postings
-from utils import *
+import nltk
+import math
+from heapq import nlargest
 
 class Searcher(object):
 	def __init__(self, dictionary_file, postings_file):
 		self.dictionary = Dictionary(dictionary_file)
 		self.postings = Postings(postings_file)
 		self.dictionary.load()
-		self.all_docs = self.postings.load_list(0)
+		self.rank_limit = 10
 
-	#evaluates a query assuming it is in RPN 
-	def evaluate_query(self, parsed_query):
-		stack = []
-		while(len(parsed_query) != 0):
-			element = parsed_query.pop(0)
-			if element == 'NOT':
-				operand = stack.pop()
-				stack.append(self.evaluate_NOT(operand))
-			elif element == 'AND':
-				first_operand = stack.pop()
-				second_operand = stack.pop()
-				stack.append(self.evaluate_AND(first_operand, second_operand))
-			elif element == 'OR':
-				first_operand = stack.pop()
-				second_operand = stack.pop()
-				stack.append(self.evaluate_OR(first_operand, second_operand))
+	#evaluates a query
+	def evaluate_query(self, query):
+		N = self.dictionary.get_do c_count
+		scores = {}
+		tokens = nltk.word_tokenize(query)
+		query_map = {}
+
+		# Build frequency table for query
+		for token in tokens:
+			term = stemmer.stem(token).lower()
+			if term in query_map:
+				query_map[term] += 1
 			else:
-				stack.append(element)
-		value = stack.pop()
-		if not isinstance(value, list):
-			offset = self.dictionary.get_offset(value)
-			value = self.postings.load_list(offset)
-		return value
+				query_map[term] = 1
 
-	def evaluate_AND(self, first, second):
-		if not isinstance(first, list):
-			offset = self.dictionary.get_offset(first)
-			first = self.postings.load_list(offset)
-		if not isinstance(second, list):
-			offset = self.dictionary.get_offset(second)
-			second = self.postings.load_list(offset)
-		return skip_intersection(first, second)
+		for token in tokens:
+			term = stemmer.stem(token).lower()
+			df = self.dictionary.get_df(term)
+			w_tq = (1 + math.log(query_map[term], 10)) * math.log(N / df, 10)
+			query_map[term] = w_tq
+
+			offset = self.dictionary.get_offset(term)
+			postings = self.postings.load_list(offset)
+
+			for posting in postings:
+				doc = posting[0]
+				w_td = 1 + math.log(posting[1], 10)
+				scores[doc] += w_td * w_tq
+
+		query_length = math.sqrt(sum(map(lambda x: x * x , query_map.values())))
+		heap = []
+		for doc, value in scores.iteritems():
+			doc_length = self.dictionary.get_doc_length(doc)
+			scores[doc] = value / (query_length * doc_length)
+		
+		#get top K from heap
+		return map(lambda x: x[0], nlargest(self.rank_limit, scores.items(), 
+									key = lambda x: x[1]))
+
+				
+
+
+
 			
-	def evaluate_OR(self, first, second):
-		if not isinstance(first, list):
-			offset = self.dictionary.get_offset(first)
-			first = self.postings.load_list(offset)
-		if not isinstance(second, list):
-			offset = self.dictionary.get_offset(second)
-			second = self.postings.load_list(offset)
-		return union(first, second)
-
-	def evaluate_NOT(self, operand):
-		if not isinstance(operand, list):
-			offset = self.dictionary.get_offset(operand)
-			operand = self.postings.load_list(offset)
-		return difference(self.all_docs, operand)
-
-
-
-
-
-
-
-
+			

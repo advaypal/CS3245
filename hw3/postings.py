@@ -19,7 +19,13 @@ class Postings(object):
 	def increment_tf(self, doc_id, offset):
 		doc_set = self.postings[offset]
 		if doc_id in doc_set:
-			doc_set.doc_id += 1
+			doc_set[doc_id] += 1
+
+	def get_posting_list(self, offset):
+		return map(lambda x: x[0], self.postings[offset])
+
+	def get_tf_list(self, offset):
+		return map(lambda x: x[1], self.postings[offset])
 
 	def add_new_term(self):
 		self.postings.append(set()) 

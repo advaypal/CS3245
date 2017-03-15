@@ -23,7 +23,7 @@ def build_index(directory, dictionary_file, postings_file):
 	stemmer = nltk.stem.porter.PorterStemmer()
 	last = ''
 	for doc_id in files:
-		dictionary.add_document()
+		dictionary.add_doc()
 		line_number = 1
 		# Use linecache to get line
 		line = linecache.getline(os.path.join(directory, doc_id), line_number)
@@ -53,6 +53,8 @@ def build_index(directory, dictionary_file, postings_file):
 						
 			line_number += 1
 			line = linecache.getline(os.path.join(directory, doc_id), line_number)
+			# Store doc length
+			dictionary.add_doc_length(doc_id, postings.get_tf_list)
 	# save data
 	postings.save(dictionary)
 	dictionary.save()
