@@ -23,8 +23,9 @@ def build_index(directory, dictionary_file, postings_file):
 	stemmer = nltk.stem.porter.PorterStemmer()
 	last = ''
 	for doc_id in files:
-		dictionary.add_doc()
+		tf_list = {}
 		line_number = 1
+		offset = 0
 		# Use linecache to get line
 		line = linecache.getline(os.path.join(directory, doc_id), line_number)
 		while line != '':
@@ -39,22 +40,30 @@ def build_index(directory, dictionary_file, postings_file):
 					# if term already exists in dictionary, we find row number
 					if dictionary.has_term(stemmed_token):
 						offset = dictionary.get_offset(stemmed_token) 
-						# If postings already has doc id, then increment tf,
+						# If postings for that term already has doc id, 
+						# then increment tf,
 						# Else increment df
 						if postings.has_doc_id(doc_id, offset):
 							postings.increment_tf(doc_id, offset)	
 						else:
 							dictionary.increment_df(stemmed_token)
+							postings.add_doc_id(doc_id, offset)
 					# else, we add it to dictionary and postings
 					else:
 						offset = postings.add_new_term()
 						postings.add_doc_id(doc_id, offset)
 						dictionary.add_new_term(stemmed_token, offset)
+
+					#Keep track of tf values of all terms in doc
+					if stemmed_token in tf_list:
+						tf_list[stemmed_token] += 1
+					else:
+						tf_list[stemmed_token] = 1
 						
 			line_number += 1
 			line = linecache.getline(os.path.join(directory, doc_id), line_number)
-			# Store doc length
-			dictionary.add_doc_length(doc_id, postings.get_tf_list)
+		# Store doc length
+		dictionary.add_doc_length(doc_id, tf_list.values())
 	# save data
 	postings.save(dictionary)
 	dictionary.save()

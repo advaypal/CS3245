@@ -1,8 +1,6 @@
 import nltk
 import os
-#TODO: NEEDED?
 from searcher import Searcher
-from utils import *
 import sys
 
 def get_argument_value(flag):

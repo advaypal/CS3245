@@ -9,26 +9,21 @@ class Postings(object):
 	def has_doc_id(self, doc_id, offset):
 		doc_id = int(doc_id)
 		doc_set = self.postings[offset]
-		return doc_id not in doc_set		
+		return doc_id in doc_set		
 
 	def add_doc_id(self, doc_id, offset):
 		doc_id = int(doc_id)
 		doc_set = self.postings[offset]
-		doc_set.add({doc_id: 1})
+		doc_set[doc_id] = 1
 
 	def increment_tf(self, doc_id, offset):
+		doc_id = int(doc_id)
 		doc_set = self.postings[offset]
-		if doc_id in doc_set:
+		if doc_id in doc_set:		
 			doc_set[doc_id] += 1
 
-	def get_posting_list(self, offset):
-		return map(lambda x: x[0], self.postings[offset])
-
-	def get_tf_list(self, offset):
-		return map(lambda x: x[1], self.postings[offset])
-
 	def add_new_term(self):
-		self.postings.append(set()) 
+		self.postings.append({}) 
 		return len(self.postings) - 1
 
 	def save(self, dictionary):
@@ -36,7 +31,7 @@ class Postings(object):
 			for term in dictionary.get_terms():
 				# Sort postings list before saving it
 				# Use dictionary to get the row number for a particular term
-				posting = sorted(list(self.postings[dictionary.get_offset(term)]),
+				posting = sorted(self.postings[dictionary.get_offset(term)].items(),
 								 key = lambda x: x[0])
 				dictionary.set_offset(term, f.tell())
 				f.write(str(posting) + '\n')
@@ -55,5 +50,5 @@ class Postings(object):
 				offset +=1
 				f.seek(offset)
 				current = f.read(1)
-			return map(ast.literal_eval, ast.literal_eval(''.join(ans)))        	
+			return ast.literal_eval(''.join(ans))       	
 			

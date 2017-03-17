@@ -1,0 +1,1 @@
+python index.py -i /Users/advaypal/nltk_data/corpora/reuters/training -d dictionary.txt -p postings.txt

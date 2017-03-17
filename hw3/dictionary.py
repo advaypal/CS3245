@@ -6,11 +6,19 @@ class Dictionary(object):
 		self.terms = {}
 		self.file_name = file_name
 		self.doc_lengths = {}
+		self.doc_count = 0
+
+	def get_doc_count(self):
+		return self.doc_count
 
 	def add_doc_length(self, doc_id, tf_list):
-		self.doc_lengths[doc_id] = math.sqrt(sum(map(lambda x: x * x, tf_list)))
+		doc_id = int(doc_id)
+		self.doc_count += 1
+		self.doc_lengths[doc_id] = math.sqrt(sum(map(lambda x: pow(1 + math.log(x, 10), 2), 
+													 tf_list)))
 
 	def get_doc_length(self, doc_id):
+		doc_id = int(doc_id)
 		return self.doc_lengths[doc_id]
 
 	def add_new_term(self, term, offset):
@@ -26,7 +34,7 @@ class Dictionary(object):
 		if self.has_term(term):
 			return self.terms[term][0]
 		else:
-			return None
+			return 0
 
 	def get_offset(self, term):
 		if self.has_term(term):
@@ -47,11 +55,19 @@ class Dictionary(object):
 
 	def save(self):
 		with open(self.file_name, 'w') as f:
-			pickle.dump(self.terms, f)
+			pickle.dump({
+				'terms': self.terms,
+				'doc_lengths': self.doc_lengths,
+				'doc_count': self.doc_count
+			}, f)
 	
 	def load(self):
+		data = {}
 		with open(self.file_name) as f:
-			self.terms = pickle.load(f)
+			data = pickle.load(f)
+		self.terms = data['terms']
+		self.doc_lengths = data['doc_lengths']
+		self.doc_count = data['doc_count']
 	
 	def get_terms(self):
 		return self.terms
