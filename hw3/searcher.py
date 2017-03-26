@@ -49,7 +49,7 @@ class Searcher(object):
 		for doc, value in scores.iteritems():
 			doc_length = self.dictionary.get_doc_length(doc)
 			scores[doc] = value / (query_length * doc_length)
-			print(str(doc) + " " + str(scores[doc]))
+			#print(str(doc) + " " + str(scores[doc]))
 		
 		#get top K from heap
 		return map(lambda x: x[0], nlargest(self.rank_limit, scores.items(), 

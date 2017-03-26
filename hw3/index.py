@@ -42,7 +42,7 @@ def build_index(directory, dictionary_file, postings_file):
 						offset = dictionary.get_offset(stemmed_token) 
 						# If postings for that term already has doc id, 
 						# then increment tf,
-						# Else increment df
+						# Else increment df and add the doc id
 						if postings.has_doc_id(doc_id, offset):
 							postings.increment_tf(doc_id, offset)	
 						else:
